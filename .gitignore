@@ -1,0 +1,36 @@
+# Never commit secrets
+.env
+.env.*
+*.pk
+*.key
+*_pk
+relayer*.py
+relayer_state.json
+node.py
+app.py
+app.py.bak*
+node.py.bak*
+*.bak
+_old_backups/
+
+# Build artifacts
+build/
+dist/
+*.spec
+*.dmg
+*.zip
+*.exe
+*.AppImage
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+env/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini

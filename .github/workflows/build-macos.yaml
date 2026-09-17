@@ -1,0 +1,88 @@
+name: Build macOS
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+env:
+  APP_NAME: "LBTC Wallet & Miner"
+  BUNDLE_ID: "com.latebitcoiners.miner"
+  VERSION: "v51"
+
+jobs:
+  build-arm64:
+    name: Build (Apple Silicon)
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Verify tkinter
+        run: python -c "import tkinter; print('tkinter OK')"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyinstaller pillow
+          pip install -r requirements.txt
+
+      - name: Convert icon.ico to icon.icns
+        run: |
+          python - <<'PY'
+          from PIL import Image
+          import os
+          img = Image.open("icon.ico").convert("RGBA")
+          os.makedirs("icon.iconset", exist_ok=True)
+          specs = [
+              ("icon_16x16.png", 16), ("icon_16x16@2x.png", 32),
+              ("icon_32x32.png", 32), ("icon_32x32@2x.png", 64),
+              ("icon_128x128.png", 128), ("icon_128x128@2x.png", 256),
+              ("icon_256x256.png", 256), ("icon_256x256@2x.png", 512),
+              ("icon_512x512.png", 512), ("icon_512x512@2x.png", 1024),
+          ]
+          for name, size in specs:
+              img.resize((size, size), Image.LANCZOS).save(f"icon.iconset/{name}")
+          PY
+          iconutil -c icns icon.iconset -o icon.icns
+
+      - name: Build with PyInstaller
+        run: |
+          pyinstaller \
+            --windowed \
+            --name "$APP_NAME" \
+            --icon icon.icns \
+            --osx-bundle-identifier "$BUNDLE_ID" \
+            --clean \
+            --noconfirm \
+            LBTC_Wallet_Miner_v51.py
+
+      - name: Create .dmg
+        run: |
+          brew install create-dmg
+          create-dmg \
+            --volname "$APP_NAME" \
+            --window-size 600 400 \
+            --icon-size 100 \
+            --icon "$APP_NAME.app" 150 190 \
+            --app-drop-link 450 190 \
+            "LBTC-Miner-macOS-arm64-${VERSION}.dmg" \
+            "dist/$APP_NAME.app"
+
+      - name: Create .zip
+        run: |
+          cd dist
+          zip -r -y "../LBTC-Miner-macOS-arm64-${VERSION}.zip" "$APP_NAME.app"
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-arm64
+          path: |
+            LBTC-Miner-macOS-arm64-*.dmg
+            LBTC-Miner-macOS-arm64-*.zip
+          if-no-files-found: error
