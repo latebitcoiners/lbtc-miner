@@ -1,0 +1,7 @@
+customtkinter>=5.2
+cryptography>=42
+ecdsa>=0.19
+pillow>=10
+requests>=2.31
+numpy>=1.26
+pyopencl>=2024.1
