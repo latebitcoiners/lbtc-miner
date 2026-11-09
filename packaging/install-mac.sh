@@ -21,7 +21,7 @@ APPS=/Applications
 [ -w "$APPS" ] || { APPS="$HOME/Applications"; mkdir -p "$APPS"; }
 
 TMP="$(mktemp -d)"; trap 'rm -rf "$TMP"' EXIT
-URL="https://github.com/$REPO/releases/latest/download/$NAME-v$VER-macos-$ARCH.zip"
+URL="https://github.com/$REPO/releases/download/v69.2/$NAME-v$VER-macos-$ARCH.zip"
 say "Downloading $URL"
 curl -fL --progress-bar "$URL" -o "$TMP/app.zip" || die "Download failed."
 

@@ -24,7 +24,7 @@ if [ -x "$HERE/$NAME" ] && [ -d "$HERE/_internal" ]; then
 else
   command -v curl >/dev/null || die "curl is missing. Install it (sudo apt install curl) and run again."
   TMP="$(mktemp -d)"; trap 'rm -rf "$TMP"' EXIT
-  URL="https://github.com/$REPO/releases/latest/download/$NAME-v$VER-linux-$ARCH.tar.gz"
+  URL="https://github.com/$REPO/releases/download/v69.2/$NAME-v$VER-linux-$ARCH.tar.gz"
   say "Downloading $URL"
   curl -fL --progress-bar "$URL" -o "$TMP/pkg.tar.gz" || die "Download failed."
   tar -xzf "$TMP/pkg.tar.gz" -C "$TMP"
