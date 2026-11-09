@@ -20,7 +20,7 @@ jobs:
     # Debian 11 base = glibc 2.31, so the build runs on Ubuntu 20.04+ / Debian 11+ / Fedora / Mint / Arch
     container: python:3.12-bullseye
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Build + self-test
         run: PYTHON=python bash packaging/build.sh
       - name: Installer test (fresh user)
@@ -28,7 +28,7 @@ jobs:
           useradd -m tester
           mkdir /tmp/t && tar -xzf release/*.tar.gz -C /tmp/t && chmod -R a+rx /tmp/t
           su tester -c "cd /tmp/t/LBTC-PRO && ./install.sh"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: linux-${{ matrix.runner }}
           path: release/*
@@ -38,11 +38,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - runner: macos-14            # Apple Silicon (M1-M4)
+          - runner: macos-15            # Apple Silicon (M1-M4)
           - runner: macos-15-intel      # Intel Macs
     runs-on: ${{ matrix.runner }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Python 3.12 from python.org (includes Tk, runs on macOS 10.13+)
         run: |
           curl -fsSL -o py.pkg https://www.python.org/ftp/python/3.12.10/python-3.12.10-macos11.pkg
@@ -56,7 +56,7 @@ jobs:
         run: |
           mkdir -p ~/Applications/t && ditto -x -k release/*.zip ~/Applications/t
           ~/Applications/t/LBTC-PRO.app/Contents/MacOS/LBTC-PRO --selftest
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: mac-${{ matrix.runner }}
           path: release/*
@@ -66,8 +66,8 @@ jobs:
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/')
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@v5
+      - uses: actions/download-artifact@v5
         with:
           path: out
           merge-multiple: true
